@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ErgoStudio - Multi-Tool Parametric 3D Generator</title>
+  <title>ErgoStudio 3D - Universal Parametric Generator</title>
   <style>
     *, *::before, *::after {
       box-sizing: border-box;
@@ -29,7 +29,7 @@
       display: block;
     }
     #sidebar {
-      width: 410px;
+      width: 420px;
       background-color: #1e293b;
       border-left: 1px solid #334155;
       display: flex;
@@ -106,6 +106,16 @@
       font-weight: 600;
       outline: none;
       cursor: pointer;
+    }
+    optgroup {
+      background: #1e293b;
+      color: #94a3b8;
+      font-weight: 700;
+    }
+    option {
+      background: #0f172a;
+      color: #f8fafc;
+      font-weight: 500;
     }
     .preset-group {
       display: flex;
@@ -212,7 +222,7 @@
 <body>
 
   <div id="viewport-container">
-    <div class="instruction-badge" id="info-badge">Klik & seret untuk putar 3D | Scroll untuk zoom</div>
+    <div class="instruction-badge" id="info-badge">Klik & seret untuk memutar 3D | Scroll untuk zoom</div>
     <canvas id="canvas3d"></canvas>
   </div>
 
@@ -229,14 +239,21 @@
     </div>
 
     <div class="tool-selector">
-      <label for="select-tool">Koleksi Alat Bantu Kerja:</label>
+      <label for="select-tool">Kategori & Pilihan Alat:</label>
       <select id="select-tool">
-        <option value="lever">1. Tuas Pembuka Tutup Botol / Keran</option>
-        <option value="grip">2. Selongsong Gagang Alat (Sendok/Obeng)</option>
-        <option value="wedge">3. Baji Miring Penyangga Tangan</option>
-        <option value="key">4. Tuas Pemutar Anak Kunci Rumah</option>
-        <option value="page">5. Penahan Halaman Buku (Ibu Jari)</option>
-        <option value="pusher">6. Tuas Penekan Tombol / Sakelar</option>
+        <optgroup label="Alat Bantu Harian & Pekerja">
+          <option value="lever">1. Tuas Pembuka Tutup Botol / Keran</option>
+          <option value="grip">2. Selongsong Gagang Alat (Obeng/Sendok)</option>
+          <option value="wedge">3. Baji Penyangga Pergelangan Tangan</option>
+          <option value="key">4. Tuas Pemutar Anak Kunci Rumah</option>
+          <option value="page">5. Penahan Halaman Buku (Ibu Jari)</option>
+          <option value="pusher">6. Tuas Penekan Sakelar / Tombol</option>
+        </optgroup>
+        <optgroup label="Aksesoris & Adaptif Kendaraan">
+          <option value="spinner">7. Knop Pemutar Setir Mobil (1 Tangan)</option>
+          <option value="clamp">8. Klem Braket Setang Motor / Sepeda</option>
+          <option value="stalk">9. Ekstensi Tuas Sein / Wiper Mobil</option>
+        </optgroup>
       </select>
     </div>
 
@@ -304,7 +321,7 @@
       controls.enableDamping = true;
       controls.dampingFactor = 0.05;
 
-      const ambientLight = new THREE.AmbientLight(0xffffff, 0.65);
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
       scene.add(ambientLight);
 
       const dirLight = new THREE.DirectionalLight(0xffffff, 0.9);
@@ -534,7 +551,7 @@
         update();
       }
 
-      // 3. BAJI PENYANGGA TANGAN (WRIST WEDGE)
+      // 3. BAJI PENYANGGA TANGAN
       function renderWedgeControls() {
         dynamicControls.innerHTML = `
           <div class="preset-group">
@@ -609,13 +626,13 @@
         update();
       }
 
-      // 4. TUAS PEMUTAR ANAK KUNCI (KEY TURNER LEVER)
+      // 4. TUAS PEMUTAR KUNCI
       function renderKeyControls() {
         dynamicControls.innerHTML = `
           <div class="preset-group">
             <button class="btn-preset" data-kw="24" data-l="85" data-t="10">Kunci Gembok</button>
-            <button class="btn-preset" data-kw="28" data-l="100" data-t="12">Kunci Pintu Kamar</button>
-            <button class="btn-preset" data-kw="34" data-l="120" data-t="14">Kunci Pintu Utama</button>
+            <button class="btn-preset" data-kw="28" data-l="100" data-t="12">Kunci Kamar</button>
+            <button class="btn-preset" data-kw="34" data-l="120" data-t="14">Kunci Gerbang</button>
           </div>
           <div class="control-group">
             <div class="control-label"><label>Lebar Kepala Kunci Asli</label><span id="val-kw">28 mm</span></div>
@@ -648,7 +665,7 @@
           clearMeshes();
           const headR = kw / 2 + 5;
           const slotW = kw;
-          const slotT = 4.0; // celah tebal anak kunci standar
+          const slotT = 4.0;
 
           const shape = new THREE.Shape();
           shape.absarc(0, 0, headR, Math.PI / 2, 3 * Math.PI / 2, false);
@@ -656,7 +673,6 @@
           shape.absarc(kl, 0, 12, -Math.PI / 2, Math.PI / 2, false);
           shape.lineTo(0, headR);
 
-          // Celah jepit anak kunci di tengah kepala
           const slotHole = new THREE.Path();
           slotHole.moveTo(-slotW / 2, -slotT / 2);
           slotHole.lineTo(slotW / 2, -slotT / 2);
@@ -674,7 +690,6 @@
           currentMesh.position.set(0, kt, 0);
           scene.add(currentMesh);
 
-          // Dummy anak kunci pipih
           const keyRefGeom = new THREE.BoxGeometry(slotW - 1, slotT - 0.5, 50);
           referenceMesh = new THREE.Mesh(keyRefGeom, helperMaterial);
           referenceMesh.position.set(0, kt / 2, 0);
@@ -697,7 +712,7 @@
         update();
       }
 
-      // 5. PENAHAN HALAMAN BUKU IBU JARI (PAGE HOLDER)
+      // 5. PENAHAN BUKU IBU JARI
       function renderPageControls() {
         dynamicControls.innerHTML = `
           <div class="preset-group">
@@ -756,7 +771,6 @@
           currentMesh.position.set(0, 0, -pt / 2);
           scene.add(currentMesh);
 
-          // Dummy ibu jari di tengah
           const thumbGeom = new THREE.CylinderGeometry(thumbR, thumbR, pt + 20, 24);
           referenceMesh = new THREE.Mesh(thumbGeom, helperMaterial);
           referenceMesh.rotation.x = Math.PI / 2;
@@ -779,7 +793,7 @@
         update();
       }
 
-      // 6. TUAS PENEKAN TOMBOL / SAKELAR (BIG BUTTON PUSHER)
+      // 6. TUAS PENEKAN TOMBOL / SAKELAR
       function renderPusherControls() {
         dynamicControls.innerHTML = `
           <div class="preset-group">
@@ -816,8 +830,6 @@
           vPt.textContent = `${pt} mm`;
 
           clearMeshes();
-
-          // Desain T-shape / L-shape ergonomis yang bisa didorong dengan telapak/siku
           const shape = new THREE.Shape();
           const tipR = 8;
           shape.moveTo(0, -pw / 2);
@@ -854,7 +866,267 @@
         update();
       }
 
-      // EXPORT BINARY STL
+      // 7. KNOP PEMUTAR SETIR MOBIL (STEERING SPINNER KNOB)
+      function renderSpinnerControls() {
+        dynamicControls.innerHTML = `
+          <div class="preset-group">
+            <button class="btn-preset" data-sw="28" data-kh="50" data-kd="44">Sedan / Hatchback</button>
+            <button class="btn-preset" data-sw="32" data-kh="55" data-kd="48">SUV / MPV</button>
+            <button class="btn-preset" data-sw="36" data-kh="60" data-kd="52">Truk / Bus</button>
+          </div>
+          <div class="control-group">
+            <div class="control-label"><label>Diameter Batang Lingkar Setir</label><span id="val-sw">32 mm</span></div>
+            <input type="range" id="param-sw" min="26" max="40" step="1" value="32">
+          </div>
+          <div class="control-group">
+            <div class="control-label"><label>Tinggi Knop Putaran</label><span id="val-kh">55 mm</span></div>
+            <input type="range" id="param-kh" min="40" max="75" step="2" value="55">
+          </div>
+          <div class="control-group">
+            <div class="control-label"><label>Diameter Kepala Knop</label><span id="val-kd">48 mm</span></div>
+            <input type="range" id="param-kd" min="38" max="60" step="1" value="48">
+          </div>
+        `;
+        const pSw = document.getElementById('param-sw');
+        const pKh = document.getElementById('param-kh');
+        const pKd = document.getElementById('param-kd');
+        const vSw = document.getElementById('val-sw');
+        const vKh = document.getElementById('val-kh');
+        const vKd = document.getElementById('val-kd');
+
+        function update() {
+          const sw = parseFloat(pSw.value);
+          const kh = parseFloat(pKh.value);
+          const kd = parseFloat(pKd.value);
+          vSw.textContent = `${sw} mm`;
+          vKh.textContent = `${kh} mm`;
+          vKd.textContent = `${kd} mm`;
+
+          clearMeshes();
+          const baseClampR = sw / 2;
+          const clampThick = 7;
+          const totalBaseR = baseClampR + clampThick;
+
+          // Membentuk kombinasi klem penjepit bawah + knop jamur ergonomis di atas
+          const shape = new THREE.Shape();
+          shape.absarc(0, 0, totalBaseR, 0, Math.PI, false);
+          shape.lineTo(totalBaseR, -10);
+          shape.lineTo(kd / 2, kh);
+          shape.absarc(0, kh, kd / 2, 0, Math.PI, false);
+          shape.lineTo(-totalBaseR, -10);
+          shape.closePath();
+
+          const hole = new THREE.Path();
+          hole.absarc(0, 0, baseClampR, 0, Math.PI * 2, true);
+          shape.holes.push(hole);
+
+          const geom = new THREE.ExtrudeGeometry(shape, {
+            steps: 2, depth: 36, bevelEnabled: true, bevelThickness: 2, bevelSize: 1.5, bevelSegments: 3
+          });
+
+          currentMesh = new THREE.Mesh(geom, primaryMaterial);
+          currentMesh.position.set(0, 0, -18);
+          scene.add(currentMesh);
+
+          // Referensi batang lingkar setir (silinder horizontal)
+          const rimGeom = new THREE.CylinderGeometry(baseClampR, baseClampR, 140, 32);
+          referenceMesh = new THREE.Mesh(rimGeom, helperMaterial);
+          referenceMesh.rotation.z = Math.PI / 2;
+          scene.add(referenceMesh);
+
+          const volCm3 = (Math.PI * Math.pow(kd / 20, 2) * (kh / 10) * 0.45) + 25;
+          const weight = Math.max(45, Math.round(volCm3 * 1.25));
+          updateMetricsDisplay("Manuver Setir:", "Putar Balik Cukup 1 Tangan", weight, "PETG / ABS (Tahan Panas)", 550);
+          infoBadge.textContent = "Silinder abu-abu = Lingkar setir mobil | Knop biru = Pegangan putar telapak tangan";
+        }
+
+        [pSw, pKh, pKd].forEach(el => el.addEventListener('input', update));
+        dynamicControls.querySelectorAll('.btn-preset').forEach(btn => {
+          btn.addEventListener('click', () => {
+            pSw.value = btn.dataset.sw;
+            pKh.value = btn.dataset.kh;
+            pKd.value = btn.dataset.kd;
+            update();
+          });
+        });
+        update();
+      }
+
+      // 8. KLEM BRAKET SETANG MOTOR / SEPEDA (HANDLEBAR CLAMP)
+      function renderClampControls() {
+        dynamicControls.innerHTML = `
+          <div class="preset-group">
+            <button class="btn-preset" data-hd="22" data-bw="32" data-pl="45">Standar 22mm</button>
+            <button class="btn-preset" data-hd="28" data-bw="38" data-pl="50">Fatbar 28mm</button>
+            <button class="btn-preset" data-hd="32" data-bw="42" data-pl="55">Stang Sepeda 31.8</button>
+          </div>
+          <div class="control-group">
+            <div class="control-label"><label>Diameter Pipa Setang</label><span id="val-hd">22 mm</span></div>
+            <input type="range" id="param-hd" min="20" max="35" step="1" value="22">
+          </div>
+          <div class="control-group">
+            <div class="control-label"><label>Lebar Klem Penjepit</label><span id="val-bw">32 mm</span></div>
+            <input type="range" id="param-bw" min="20" max="50" step="2" value="32">
+          </div>
+          <div class="control-group">
+            <div class="control-label"><label>Jarak Tapak Baut Aksesoris</label><span id="val-pl">45 mm</span></div>
+            <input type="range" id="param-pl" min="30" max="70" step="2" value="45">
+          </div>
+        `;
+        const pHd = document.getElementById('param-hd');
+        const pBw = document.getElementById('param-bw');
+        const pPl = document.getElementById('param-pl');
+        const vHd = document.getElementById('val-hd');
+        const vBw = document.getElementById('val-bw');
+        const vPl = document.getElementById('val-pl');
+
+        function update() {
+          const hd = parseFloat(pHd.value);
+          const bw = parseFloat(pBw.value);
+          const pl = parseFloat(pPl.value);
+          vHd.textContent = `${hd} mm`;
+          vBw.textContent = `${bw} mm`;
+          vPl.textContent = `${pl} mm`;
+
+          clearMeshes();
+          const pipeR = hd / 2;
+          const wall = 6;
+          const outerR = pipeR + wall;
+
+          // Profil klem C-Clamp dengan tapak mounting datar di atasnya
+          const shape = new THREE.Shape();
+          shape.absarc(0, 0, outerR, 0, Math.PI * 1.5, false);
+          shape.lineTo(pl, -outerR);
+          shape.lineTo(pl, pipeR);
+          shape.lineTo(outerR, pipeR);
+          shape.closePath();
+
+          const hole = new THREE.Path();
+          hole.absarc(0, 0, pipeR, 0, Math.PI * 2, true);
+          shape.holes.push(hole);
+
+          // Lubang baut mounting aksesoris (diameter 5mm untuk baut M5)
+          const boltHole = new THREE.Path();
+          boltHole.absarc(pl - 8, 0, 2.7, 0, Math.PI * 2, true);
+          shape.holes.push(boltHole);
+
+          const geom = new THREE.ExtrudeGeometry(shape, {
+            steps: 1, depth: bw, bevelEnabled: true, bevelThickness: 1.5, bevelSize: 1.2, bevelSegments: 3
+          });
+
+          currentMesh = new THREE.Mesh(geom, primaryMaterial);
+          currentMesh.position.set(0, 0, -bw / 2);
+          scene.add(currentMesh);
+
+          // Pipa setang acuan (silinder tembus)
+          const barGeom = new THREE.CylinderGeometry(pipeR, pipeR, bw + 60, 32);
+          referenceMesh = new THREE.Mesh(barGeom, helperMaterial);
+          referenceMesh.position.set(0, 0, 0);
+          scene.add(referenceMesh);
+
+          const volCm3 = ((outerR * outerR * Math.PI - pipeR * pipeR * Math.PI + pl * 12) * bw / 1000) * 0.5;
+          const weight = Math.max(25, Math.round(volCm3 * 1.27));
+          updateMetricsDisplay("Kekakuan Braket:", "Tahan Getaran Mesin Motor", weight, "PETG / Carbon-PLA", 550);
+          infoBadge.textContent = "Silinder abu-abu = Pipa setang motor/sepeda | Tapak biru = Dudukan HP/sakelar";
+        }
+
+        [pHd, pBw, pPl].forEach(el => el.addEventListener('input', update));
+        dynamicControls.querySelectorAll('.btn-preset').forEach(btn => {
+          btn.addEventListener('click', () => {
+            pHd.value = btn.dataset.hd;
+            pBw.value = btn.dataset.bw;
+            pPl.value = btn.dataset.pl;
+            update();
+          });
+        });
+        update();
+      }
+
+      // 9. EKSTENSI TUAS SEIN / WIPER MOBIL (STALK LEVER EXTENSION)
+      function renderStalkControls() {
+        dynamicControls.innerHTML = `
+          <div class="preset-group">
+            <button class="btn-preset" data-sd="14" data-sl="75" data-fw="28">Mobil Kompak</button>
+            <button class="btn-preset" data-sd="17" data-sl="90" data-fw="32">Mobil Keluarga</button>
+            <button class="btn-preset" data-sd="21" data-sl="105" data-fw="36">Pick-up / SUV</button>
+          </div>
+          <div class="control-group">
+            <div class="control-label"><label>Diameter Batang Tuas Asli</label><span id="val-sd">17 mm</span></div>
+            <input type="range" id="param-sd" min="12" max="25" step="1" value="17">
+          </div>
+          <div class="control-group">
+            <div class="control-label"><label>Panjang Jangkauan Ekstensi</label><span id="val-sl">90 mm</span></div>
+            <input type="range" id="param-sl" min="60" max="130" step="5" value="90">
+          </div>
+          <div class="control-group">
+            <div class="control-label"><label>Lebar Sirip Sentuh Jari</label><span id="val-fw">32 mm</span></div>
+            <input type="range" id="param-fw" min="20" max="45" step="1" value="32">
+          </div>
+        `;
+        const pSd = document.getElementById('param-sd');
+        const pSl = document.getElementById('param-sl');
+        const pFw = document.getElementById('param-fw');
+        const vSd = document.getElementById('val-sd');
+        const vSl = document.getElementById('val-sl');
+        const vFw = document.getElementById('val-fw');
+
+        function update() {
+          const sd = parseFloat(pSd.value);
+          const sl = parseFloat(pSl.value);
+          const fw = parseFloat(pFw.value);
+          vSd.textContent = `${sd} mm`;
+          vSl.textContent = `${sl} mm`;
+          vFw.textContent = `${fw} mm`;
+
+          clearMeshes();
+          const stalkR = sd / 2;
+          const collarThick = 4.5;
+          const collarOuterR = stalkR + collarThick;
+
+          // Selongsong klem tuas + sirip pemanjang ke arah setir
+          const shape = new THREE.Shape();
+          shape.absarc(0, 0, collarOuterR, Math.PI / 2, 3 * Math.PI / 2, false);
+          shape.lineTo(sl - 15, -fw / 2);
+          shape.quadraticCurveTo(sl, 0, sl - 15, fw / 2);
+          shape.lineTo(0, collarOuterR);
+
+          const hole = new THREE.Path();
+          hole.absarc(0, 0, stalkR, 0, Math.PI * 2, true);
+          shape.holes.push(hole);
+
+          const geom = new THREE.ExtrudeGeometry(shape, {
+            steps: 1, depth: 22, bevelEnabled: true, bevelThickness: 1.5, bevelSize: 1, bevelSegments: 3
+          });
+
+          currentMesh = new THREE.Mesh(geom, primaryMaterial);
+          currentMesh.rotation.x = -Math.PI / 2;
+          currentMesh.position.set(0, 22, 0);
+          scene.add(currentMesh);
+
+          // Batang tuas sein acuan
+          const stalkGeom = new THREE.CylinderGeometry(stalkR, stalkR, 70, 24);
+          referenceMesh = new THREE.Mesh(stalkGeom, helperMaterial);
+          referenceMesh.position.set(0, 11, 0);
+          scene.add(referenceMesh);
+
+          const weight = Math.max(16, Math.round(((collarOuterR * collarOuterR * Math.PI + sl * fw * 0.5) * 22 / 1000) * 0.45 * 1.25));
+          updateMetricsDisplay("Jangkauan Sein:", "Sentuh Sein Tanpa Lepas Setir", weight, "PETG / PLA+");
+          infoBadge.textContent = "Silinder abu-abu = Batang tuas sein/wiper | Sirip biru = Perpanjangan ke jari";
+        }
+
+        [pSd, pSl, pFw].forEach(el => el.addEventListener('input', update));
+        dynamicControls.querySelectorAll('.btn-preset').forEach(btn => {
+          btn.addEventListener('click', () => {
+            pSd.value = btn.dataset.sd;
+            pSl.value = btn.dataset.sl;
+            pFw.value = btn.dataset.fw;
+            update();
+          });
+        });
+        update();
+      }
+
+      // EXPORT BINARY STL UNIVERSAL
       function exportBinarySTL(geometry, filename = 'ergo-tool.stl') {
         const tempGeom = geometry.clone();
         tempGeom.center();
@@ -930,6 +1202,9 @@
         else if (val === 'key') renderKeyControls();
         else if (val === 'page') renderPageControls();
         else if (val === 'pusher') renderPusherControls();
+        else if (val === 'spinner') renderSpinnerControls();
+        else if (val === 'clamp') renderClampControls();
+        else if (val === 'stalk') renderStalkControls();
       });
 
       btnExport.addEventListener('click', () => {
@@ -950,7 +1225,7 @@
         renderer.render(scene, camera);
       }
 
-      // Init pertama kali
+      // Render awal
       renderLeverControls();
       animate();
     })();
