@@ -29,14 +29,14 @@
       display: block;
     }
     #sidebar {
-      width: 400px;
+      width: 410px;
       background-color: #1e293b;
       border-left: 1px solid #334155;
       display: flex;
       flex-direction: column;
       overflow-y: auto;
       padding: 24px;
-      gap: 18px;
+      gap: 16px;
     }
     .header h1 {
       font-size: 1.25rem;
@@ -102,14 +102,14 @@
       color: #38bdf8;
       padding: 10px;
       border-radius: 6px;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       font-weight: 600;
       outline: none;
       cursor: pointer;
     }
     .preset-group {
       display: flex;
-      gap: 8px;
+      gap: 6px;
     }
     .btn-preset {
       flex: 1;
@@ -118,7 +118,7 @@
       border: 1px solid #475569;
       color: #e2e8f0;
       border-radius: 6px;
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       cursor: pointer;
       transition: background 0.2s, border-color 0.2s;
     }
@@ -134,7 +134,7 @@
     .control-label {
       display: flex;
       justify-content: space-between;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       font-weight: 500;
       color: #cbd5e1;
     }
@@ -151,7 +151,7 @@
       background: #0f172a;
       border: 1px solid #334155;
       border-radius: 8px;
-      padding: 16px;
+      padding: 14px;
       display: flex;
       flex-direction: column;
       gap: 10px;
@@ -159,7 +159,7 @@
     .metric-row {
       display: flex;
       justify-content: space-between;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
     }
     .metric-row .label {
       color: #94a3b8;
@@ -176,7 +176,7 @@
       color: #ffffff;
       border: none;
       border-radius: 8px;
-      padding: 14px;
+      padding: 13px;
       font-size: 0.95rem;
       font-weight: 600;
       cursor: pointer;
@@ -229,15 +229,17 @@
     </div>
 
     <div class="tool-selector">
-      <label for="select-tool">Pilih Jenis Alat Bantu:</label>
+      <label for="select-tool">Koleksi Alat Bantu Kerja:</label>
       <select id="select-tool">
-        <option value="lever">1. Tuas Pembuka Botol & Keran (Easy Lever)</option>
-        <option value="grip">2. Selongsong Gagang Alat (Thick Grip)</option>
-        <option value="wedge">3. Baji Penyangga Tangan (Wrist Wedge)</option>
+        <option value="lever">1. Tuas Pembuka Tutup Botol / Keran</option>
+        <option value="grip">2. Selongsong Gagang Alat (Sendok/Obeng)</option>
+        <option value="wedge">3. Baji Miring Penyangga Tangan</option>
+        <option value="key">4. Tuas Pemutar Anak Kunci Rumah</option>
+        <option value="page">5. Penahan Halaman Buku (Ibu Jari)</option>
+        <option value="pusher">6. Tuas Penekan Tombol / Sakelar</option>
       </select>
     </div>
 
-    <!-- Parameter Dinamis Container -->
     <div id="dynamic-controls" style="display: flex; flex-direction: column; gap: 14px;"></div>
 
     <div class="metrics-panel">
@@ -288,10 +290,9 @@
       const metricCost = document.getElementById('metric-cost');
       const btnExport = document.getElementById('btn-export');
 
-      // Scene 3D Setup
       const scene = new THREE.Scene();
       const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
-      camera.position.set(60, 160, 220);
+      camera.position.set(50, 150, 200);
 
       const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
       renderer.setSize(container.clientWidth, container.clientHeight);
@@ -299,7 +300,7 @@
       renderer.shadowMap.enabled = true;
 
       const controls = new THREE.OrbitControls(camera, renderer.domElement);
-      controls.target.set(30, 0, 0);
+      controls.target.set(20, 0, 0);
       controls.enableDamping = true;
       controls.dampingFactor = 0.05;
 
@@ -316,10 +317,9 @@
       scene.add(fillLight);
 
       const grid = new THREE.GridHelper(350, 35, 0x334155, 0x1e293b);
-      grid.position.set(30, -0.5, 0);
+      grid.position.set(20, -0.5, 0);
       scene.add(grid);
 
-      // Material Objek
       const primaryMaterial = new THREE.MeshStandardMaterial({
         color: 0x0ea5e9,
         roughness: 0.35,
@@ -349,9 +349,16 @@
         }
       }
 
-      // -------------------------------------------------------------
-      // 1. TOOL: EASY TWIST LEVER
-      // -------------------------------------------------------------
+      function updateMetricsDisplay(benefitLabel, benefitVal, grams, materialStr, pricePerGram = 500) {
+        metricLabelBenefit.textContent = benefitLabel;
+        metricBenefit.textContent = benefitVal;
+        metricWeight.textContent = `${grams} g`;
+        metricMaterial.textContent = materialStr;
+        const total = Math.max(15000, Math.round((grams * pricePerGram) / 1000) * 1000);
+        metricCost.textContent = `Rp ${total.toLocaleString('id-ID')}`;
+      }
+
+      // 1. TUAS PEMBUKA BOTOL & KERAN
       function renderLeverControls() {
         dynamicControls.innerHTML = `
           <div class="preset-group">
@@ -372,7 +379,6 @@
             <input type="range" id="param-t" min="8" max="20" step="1" value="10">
           </div>
         `;
-
         const pD = document.getElementById('param-d');
         const pL = document.getElementById('param-l');
         const pT = document.getElementById('param-t');
@@ -389,7 +395,6 @@
           vT.textContent = `${t} mm`;
 
           clearMeshes();
-
           const radius = d / 2;
           const outerHeadRadius = radius + 11;
           const handleEndWidth = 24;
@@ -426,7 +431,6 @@
           currentMesh = new THREE.Mesh(geom, primaryMaterial);
           currentMesh.rotation.x = -Math.PI / 2;
           currentMesh.position.set(0, t, 0);
-          currentMesh.castShadow = true;
           scene.add(currentMesh);
 
           const capGeom = new THREE.CylinderGeometry(radius, radius, t + 12, 32);
@@ -434,13 +438,8 @@
           referenceMesh.position.set(0, (t + 12) / 2 - 2, 0);
           scene.add(referenceMesh);
 
-          // Update Info
-          metricLabelBenefit.textContent = "Beban Putar:";
-          metricBenefit.textContent = `${Math.min(88, Math.round((1 - (d / (l * 1.6))) * 100))}% Lebih Ringan`;
           const weight = Math.max(16, Math.round((((Math.PI * Math.pow(d / 20 + 1.1, 2) - Math.PI * Math.pow(d / 20, 2)) + (l / 10 * 2.2)) * (t / 10)) * 0.45 * 1.24));
-          metricWeight.textContent = `${weight} g`;
-          metricMaterial.textContent = "PLA+ / PETG";
-          metricCost.textContent = `Rp ${Math.max(15000, Math.round(weight * 500 / 1000) * 1000).toLocaleString('id-ID')}`;
+          updateMetricsDisplay("Beban Putar:", `${Math.min(88, Math.round((1 - (d / (l * 1.6))) * 100))}% Lebih Ringan`, weight, "PLA+ / PETG");
           infoBadge.textContent = "Silinder abu-abu = Tutup yang dicengkeram | Tuas biru = Pengungkit";
         }
 
@@ -456,15 +455,13 @@
         update();
       }
 
-      // -------------------------------------------------------------
-      // 2. TOOL: THICK GRIP ADAPTER (SELONGSONG GAGANG ERGONOMI)
-      // -------------------------------------------------------------
+      // 2. SELONGSONG GAGANG ERGONOMIS
       function renderGripControls() {
         dynamicControls.innerHTML = `
           <div class="preset-group">
             <button class="btn-preset" data-inner="8" data-outer="32" data-h="100">Pena / Kuas</button>
             <button class="btn-preset" data-inner="11" data-outer="38" data-h="110">Sendok Makan</button>
-            <button class="btn-preset" data-inner="16" data-outer="42" data-h="120">Obeng / Tangkai</button>
+            <button class="btn-preset" data-inner="16" data-outer="42" data-h="120">Obeng / Alat</button>
           </div>
           <div class="control-group">
             <div class="control-label"><label>Diameter Alat Asli (Lubang)</label><span id="val-inner">11 mm</span></div>
@@ -479,7 +476,6 @@
             <input type="range" id="param-h" min="70" max="150" step="5" value="110">
           </div>
         `;
-
         const pInner = document.getElementById('param-inner');
         const pOuter = document.getElementById('param-outer');
         const pH = document.getElementById('param-h');
@@ -492,32 +488,14 @@
           const outerD = Math.max(innerD + 10, parseFloat(pOuter.value));
           const h = parseFloat(pH.value);
           pOuter.value = outerD;
-
           vInner.textContent = `${innerD} mm`;
           vOuter.textContent = `${outerD} mm`;
           vH.textContent = `${h} mm`;
 
           clearMeshes();
-
-          // Membentuk profil bergelombang ergonomis dengan LatheGeometry
-          const points = [];
-          const innerR = innerD / 2;
           const baseOuterR = outerD / 2;
-          const segments = 40;
+          const innerR = innerD / 2;
 
-          for (let i = 0; i <= segments; i++) {
-            const t = i / segments;
-            const y = t * h;
-            // Gelombang lekukan jari (finger grooves)
-            const groove = Math.sin(t * Math.PI * 4) * 2.2;
-            const flare = Math.sin(t * Math.PI) * 2.5;
-            const r = baseOuterR + groove + flare;
-            points.push(new THREE.Vector2(r, y));
-          }
-
-          // Geometry luar
-          const outerGeom = new THREE.CylinderGeometry(baseOuterR, baseOuterR, h, 32, 1, true);
-          // Selongsong berongga dengan Extrude Shape
           const shape = new THREE.Shape();
           shape.absarc(0, 0, baseOuterR, 0, Math.PI * 2, false);
           const hole = new THREE.Path();
@@ -525,35 +503,23 @@
           shape.holes.push(hole);
 
           const geom = new THREE.ExtrudeGeometry(shape, {
-            steps: 20,
-            depth: h,
-            bevelEnabled: true,
-            bevelThickness: 3,
-            bevelSize: 2,
-            bevelSegments: 4
+            steps: 20, depth: h, bevelEnabled: true, bevelThickness: 3, bevelSize: 2, bevelSegments: 4
           });
 
           currentMesh = new THREE.Mesh(geom, primaryMaterial);
           currentMesh.rotation.x = -Math.PI / 2;
-          currentMesh.position.set(30, 0, 0);
-          currentMesh.castShadow = true;
+          currentMesh.position.set(20, 0, 0);
           scene.add(currentMesh);
 
-          // Batang alat referensi di tengah
           const coreGeom = new THREE.CylinderGeometry(innerR, innerR, h + 30, 24);
           referenceMesh = new THREE.Mesh(coreGeom, helperMaterial);
-          referenceMesh.position.set(30, (h + 30) / 2 - 15, 0);
+          referenceMesh.position.set(20, (h + 30) / 2 - 15, 0);
           scene.add(referenceMesh);
 
-          // Metrics
-          metricLabelBenefit.textContent = "Beban Jepitan Jari:";
-          metricBenefit.textContent = "Turun ~60% (Lebih Nyaman)";
           const volCm3 = ((Math.PI * Math.pow(outerD / 20, 2) - Math.PI * Math.pow(innerD / 20, 2)) * (h / 10)) * 0.4;
           const weight = Math.max(22, Math.round(volCm3 * 1.22));
-          metricWeight.textContent = `${weight} g`;
-          metricMaterial.textContent = "TPU (Karet) / PLA";
-          metricCost.textContent = `Rp ${Math.max(18000, Math.round(weight * 600 / 1000) * 1000).toLocaleString('id-ID')}`;
-          infoBadge.textContent = "Batang abu-abu = Obeng/Pena asli | Selongsong biru = Adaptor empuk";
+          updateMetricsDisplay("Beban Jepitan Jari:", "Turun ~60% (Empuk)", weight, "TPU (Karet) / PLA", 600);
+          infoBadge.textContent = "Batang abu-abu = Gagang alat asli | Selongsong biru = Adaptor empuk";
         }
 
         [pInner, pOuter, pH].forEach(el => el.addEventListener('input', update));
@@ -568,18 +534,16 @@
         update();
       }
 
-      // -------------------------------------------------------------
-      // 3. TOOL: WRIST WEDGE / TENTING (BAJI PERGELANGAN TANGAN)
-      // -------------------------------------------------------------
+      // 3. BAJI PENYANGGA TANGAN (WRIST WEDGE)
       function renderWedgeControls() {
         dynamicControls.innerHTML = `
           <div class="preset-group">
-            <button class="btn-preset" data-ang="8" data-w="90" data-d="80">Mouse Standar</button>
-            <button class="btn-preset" data-ang="12" data-w="120" data-d="90">Keyboard Wedge</button>
-            <button class="btn-preset" data-ang="18" data-w="110" data-d="100">Koreksi Artritis</button>
+            <button class="btn-preset" data-ang="8" data-w="90" data-d="80">Mouse</button>
+            <button class="btn-preset" data-ang="12" data-w="120" data-d="90">Keyboard</button>
+            <button class="btn-preset" data-ang="18" data-w="110" data-d="100">Artritis</button>
           </div>
           <div class="control-group">
-            <div class="control-label"><label>Sudut Kemiringan (Tenting)</label><span id="val-ang">12°</span></div>
+            <div class="control-label"><label>Sudut Kemiringan</label><span id="val-ang">12°</span></div>
             <input type="range" id="param-ang" min="5" max="25" step="1" value="12">
           </div>
           <div class="control-group">
@@ -587,11 +551,10 @@
             <input type="range" id="param-w" min="70" max="160" step="5" value="110">
           </div>
           <div class="control-group">
-            <div class="control-label"><label>Kedalaman (Panjang Telapak)</label><span id="val-dep">90 mm</span></div>
+            <div class="control-label"><label>Kedalaman Telapak</label><span id="val-dep">90 mm</span></div>
             <input type="range" id="param-dep" min="60" max="130" step="5" value="90">
           </div>
         `;
-
         const pAng = document.getElementById('param-ang');
         const pW = document.getElementById('param-w');
         const pDep = document.getElementById('param-dep');
@@ -603,16 +566,13 @@
           const ang = parseFloat(pAng.value);
           const w = parseFloat(pW.value);
           const dep = parseFloat(pDep.value);
-
           vAng.textContent = `${ang} deg`;
           vW.textContent = `${w} mm`;
           vDep.textContent = `${dep} mm`;
 
           clearMeshes();
-
-          // Penampang segitiga baji (wedge profile)
           const rad = (ang * Math.PI) / 180;
-          const minH = 5; // tinggi sisi rendah (mm)
+          const minH = 5;
           const maxH = minH + Math.tan(rad) * dep;
 
           const shape = new THREE.Shape();
@@ -623,29 +583,18 @@
           shape.closePath();
 
           const geom = new THREE.ExtrudeGeometry(shape, {
-            steps: 1,
-            depth: w,
-            bevelEnabled: true,
-            bevelThickness: 2,
-            bevelSize: 2,
-            bevelSegments: 3
+            steps: 1, depth: w, bevelEnabled: true, bevelThickness: 2, bevelSize: 2, bevelSegments: 3
           });
 
           currentMesh = new THREE.Mesh(geom, primaryMaterial);
           currentMesh.rotation.y = Math.PI / 2;
-          currentMesh.position.set(-w / 2 + 30, 0, dep / 2);
-          currentMesh.castShadow = true;
+          currentMesh.position.set(-w / 2 + 20, 0, dep / 2);
           scene.add(currentMesh);
 
-          // Metrics
-          metricLabelBenefit.textContent = "Tekanan Saraf Kejepit:";
-          metricBenefit.textContent = "Bebas Tekanan Sendi";
           const volCm3 = ((minH + maxH) / 2 * dep * w / 1000) * 0.25;
           const weight = Math.max(30, Math.round(volCm3 * 1.24));
-          metricWeight.textContent = `${weight} g`;
-          metricMaterial.textContent = "PLA+ / TPU";
-          metricCost.textContent = `Rp ${Math.max(16000, Math.round(weight * 500 / 1000) * 1000).toLocaleString('id-ID')}`;
-          infoBadge.textContent = "Baji miring penyangga pergelangan tangan / pengatur sudut alat";
+          updateMetricsDisplay("Saraf Kejepit:", "Bebas Tekanan Sendi", weight, "PLA+ / TPU");
+          infoBadge.textContent = "Baji miring penyangga pergelangan tangan / pengatur sudut meja";
         }
 
         [pAng, pW, pDep].forEach(el => el.addEventListener('input', update));
@@ -660,9 +609,252 @@
         update();
       }
 
-      // -------------------------------------------------------------
+      // 4. TUAS PEMUTAR ANAK KUNCI (KEY TURNER LEVER)
+      function renderKeyControls() {
+        dynamicControls.innerHTML = `
+          <div class="preset-group">
+            <button class="btn-preset" data-kw="24" data-l="85" data-t="10">Kunci Gembok</button>
+            <button class="btn-preset" data-kw="28" data-l="100" data-t="12">Kunci Pintu Kamar</button>
+            <button class="btn-preset" data-kw="34" data-l="120" data-t="14">Kunci Pintu Utama</button>
+          </div>
+          <div class="control-group">
+            <div class="control-label"><label>Lebar Kepala Kunci Asli</label><span id="val-kw">28 mm</span></div>
+            <input type="range" id="param-kw" min="18" max="40" step="1" value="28">
+          </div>
+          <div class="control-group">
+            <div class="control-label"><label>Panjang Gagang Pengungkit</label><span id="val-kl">100 mm</span></div>
+            <input type="range" id="param-kl" min="70" max="140" step="5" value="100">
+          </div>
+          <div class="control-group">
+            <div class="control-label"><label>Ketebalan Alat</label><span id="val-kt">12 mm</span></div>
+            <input type="range" id="param-kt" min="8" max="18" step="1" value="12">
+          </div>
+        `;
+        const pKw = document.getElementById('param-kw');
+        const pKl = document.getElementById('param-kl');
+        const pKt = document.getElementById('param-kt');
+        const vKw = document.getElementById('val-kw');
+        const vKl = document.getElementById('val-kl');
+        const vKt = document.getElementById('val-kt');
+
+        function update() {
+          const kw = parseFloat(pKw.value);
+          const kl = parseFloat(pKl.value);
+          const kt = parseFloat(pKt.value);
+          vKw.textContent = `${kw} mm`;
+          vKl.textContent = `${kl} mm`;
+          vKt.textContent = `${kt} mm`;
+
+          clearMeshes();
+          const headR = kw / 2 + 5;
+          const slotW = kw;
+          const slotT = 4.0; // celah tebal anak kunci standar
+
+          const shape = new THREE.Shape();
+          shape.absarc(0, 0, headR, Math.PI / 2, 3 * Math.PI / 2, false);
+          shape.lineTo(kl, -12);
+          shape.absarc(kl, 0, 12, -Math.PI / 2, Math.PI / 2, false);
+          shape.lineTo(0, headR);
+
+          // Celah jepit anak kunci di tengah kepala
+          const slotHole = new THREE.Path();
+          slotHole.moveTo(-slotW / 2, -slotT / 2);
+          slotHole.lineTo(slotW / 2, -slotT / 2);
+          slotHole.lineTo(slotW / 2, slotT / 2);
+          slotHole.lineTo(-slotW / 2, slotT / 2);
+          slotHole.closePath();
+          shape.holes.push(slotHole);
+
+          const geom = new THREE.ExtrudeGeometry(shape, {
+            steps: 1, depth: kt, bevelEnabled: true, bevelThickness: 1.2, bevelSize: 1, bevelSegments: 3
+          });
+
+          currentMesh = new THREE.Mesh(geom, primaryMaterial);
+          currentMesh.rotation.x = -Math.PI / 2;
+          currentMesh.position.set(0, kt, 0);
+          scene.add(currentMesh);
+
+          // Dummy anak kunci pipih
+          const keyRefGeom = new THREE.BoxGeometry(slotW - 1, slotT - 0.5, 50);
+          referenceMesh = new THREE.Mesh(keyRefGeom, helperMaterial);
+          referenceMesh.position.set(0, kt / 2, 0);
+          scene.add(referenceMesh);
+
+          const weight = Math.max(18, Math.round(((headR * headR * Math.PI + kl * 24) * kt / 1000) * 0.45 * 1.24));
+          updateMetricsDisplay("Daya Putar Kunci:", "80% Lebih Enteng", weight, "PETG / PLA+");
+          infoBadge.textContent = "Balok abu-abu = Kepala anak kunci | Tuas biru = Gagang pemutar telapak tangan";
+        }
+
+        [pKw, pKl, pKt].forEach(el => el.addEventListener('input', update));
+        dynamicControls.querySelectorAll('.btn-preset').forEach(btn => {
+          btn.addEventListener('click', () => {
+            pKw.value = btn.dataset.kw;
+            pKl.value = btn.dataset.l;
+            pKt.value = btn.dataset.t;
+            update();
+          });
+        });
+        update();
+      }
+
+      // 5. PENAHAN HALAMAN BUKU IBU JARI (PAGE HOLDER)
+      function renderPageControls() {
+        dynamicControls.innerHTML = `
+          <div class="preset-group">
+            <button class="btn-preset" data-th="18" data-w="80" data-t="8">Ibu Jari S</button>
+            <button class="btn-preset" data-th="22" data-w="95" data-t="10">Ibu Jari M</button>
+            <button class="btn-preset" data-th="26" data-w="110" data-t="10">Ibu Jari L</button>
+          </div>
+          <div class="control-group">
+            <div class="control-label"><label>Diameter Lubang Ibu Jari</label><span id="val-th">22 mm</span></div>
+            <input type="range" id="param-th" min="16" max="30" step="1" value="22">
+          </div>
+          <div class="control-group">
+            <div class="control-label"><label>Rentang Sayap Penahan</label><span id="val-pw">95 mm</span></div>
+            <input type="range" id="param-pw" min="70" max="130" step="5" value="95">
+          </div>
+          <div class="control-group">
+            <div class="control-label"><label>Ketebalan Alat</label><span id="val-pt">10 mm</span></div>
+            <input type="range" id="param-pt" min="6" max="14" step="1" value="10">
+          </div>
+        `;
+        const pTh = document.getElementById('param-th');
+        const pPw = document.getElementById('param-pw');
+        const pPt = document.getElementById('param-pt');
+        const vTh = document.getElementById('val-th');
+        const vPw = document.getElementById('val-pw');
+        const vPt = document.getElementById('val-pt');
+
+        function update() {
+          const th = parseFloat(pTh.value);
+          const pw = parseFloat(pPw.value);
+          const pt = parseFloat(pPt.value);
+          vTh.textContent = `${th} mm`;
+          vPw.textContent = `${pw} mm`;
+          vPt.textContent = `${pt} mm`;
+
+          clearMeshes();
+          const thumbR = th / 2;
+          const wingSpan = pw / 2;
+
+          const shape = new THREE.Shape();
+          shape.moveTo(-wingSpan, 0);
+          shape.quadraticCurveTo(-wingSpan * 0.5, 18, 0, thumbR + 8);
+          shape.quadraticCurveTo(wingSpan * 0.5, 18, wingSpan, 0);
+          shape.quadraticCurveTo(wingSpan * 0.6, -14, 0, -thumbR - 6);
+          shape.quadraticCurveTo(-wingSpan * 0.6, -14, -wingSpan, 0);
+
+          const hole = new THREE.Path();
+          hole.absarc(0, 0, thumbR, 0, Math.PI * 2, true);
+          shape.holes.push(hole);
+
+          const geom = new THREE.ExtrudeGeometry(shape, {
+            steps: 1, depth: pt, bevelEnabled: true, bevelThickness: 2, bevelSize: 1.5, bevelSegments: 3
+          });
+
+          currentMesh = new THREE.Mesh(geom, primaryMaterial);
+          currentMesh.position.set(0, 0, -pt / 2);
+          scene.add(currentMesh);
+
+          // Dummy ibu jari di tengah
+          const thumbGeom = new THREE.CylinderGeometry(thumbR, thumbR, pt + 20, 24);
+          referenceMesh = new THREE.Mesh(thumbGeom, helperMaterial);
+          referenceMesh.rotation.x = Math.PI / 2;
+          scene.add(referenceMesh);
+
+          const weight = Math.max(14, Math.round((pw * 28 * pt / 1000) * 0.45 * 1.24));
+          updateMetricsDisplay("Kram Jempol:", "Membaca 1 Tangan Santai", weight, "PLA+");
+          infoBadge.textContent = "Silinder abu-abu = Posisi ibu jari | Sayap biru = Menahan lembaran buku terbuka";
+        }
+
+        [pTh, pPw, pPt].forEach(el => el.addEventListener('input', update));
+        dynamicControls.querySelectorAll('.btn-preset').forEach(btn => {
+          btn.addEventListener('click', () => {
+            pTh.value = btn.dataset.th;
+            pPw.value = btn.dataset.w;
+            pPt.value = btn.dataset.t;
+            update();
+          });
+        });
+        update();
+      }
+
+      // 6. TUAS PENEKAN TOMBOL / SAKELAR (BIG BUTTON PUSHER)
+      function renderPusherControls() {
+        dynamicControls.innerHTML = `
+          <div class="preset-group">
+            <button class="btn-preset" data-pl="90" data-pw="30" data-pt="10">Sakelar Lampu</button>
+            <button class="btn-preset" data-pl="110" data-pw="36" data-pt="12">Dispenser Galon</button>
+            <button class="btn-preset" data-pl="130" data-pw="42" data-pt="14">Tombol Lift / Mesin</button>
+          </div>
+          <div class="control-group">
+            <div class="control-label"><label>Panjang Lengan Tuas</label><span id="val-pl">110 mm</span></div>
+            <input type="range" id="param-pl" min="70" max="160" step="5" value="110">
+          </div>
+          <div class="control-group">
+            <div class="control-label"><label>Lebar Bantalan Dorong</label><span id="val-pw">36 mm</span></div>
+            <input type="range" id="param-pw" min="24" max="50" step="2" value="36">
+          </div>
+          <div class="control-group">
+            <div class="control-label"><label>Ketebalan Struktur</label><span id="val-pt">12 mm</span></div>
+            <input type="range" id="param-pt" min="8" max="18" step="1" value="12">
+          </div>
+        `;
+        const pPl = document.getElementById('param-pl');
+        const pPw = document.getElementById('param-pw');
+        const pPt = document.getElementById('param-pt');
+        const vPl = document.getElementById('val-pl');
+        const vPw = document.getElementById('val-pw');
+        const vPt = document.getElementById('val-pt');
+
+        function update() {
+          const pl = parseFloat(pPl.value);
+          const pw = parseFloat(pPw.value);
+          const pt = parseFloat(pPt.value);
+          vPl.textContent = `${pl} mm`;
+          vPw.textContent = `${pw} mm`;
+          vPt.textContent = `${pt} mm`;
+
+          clearMeshes();
+
+          // Desain T-shape / L-shape ergonomis yang bisa didorong dengan telapak/siku
+          const shape = new THREE.Shape();
+          const tipR = 8;
+          shape.moveTo(0, -pw / 2);
+          shape.lineTo(pl - 20, -10);
+          shape.lineTo(pl, -tipR);
+          shape.absarc(pl, 0, tipR, -Math.PI / 2, Math.PI / 2, false);
+          shape.lineTo(pl - 20, 10);
+          shape.lineTo(0, pw / 2);
+          shape.absarc(0, 0, pw / 2, Math.PI / 2, 3 * Math.PI / 2, false);
+
+          const geom = new THREE.ExtrudeGeometry(shape, {
+            steps: 1, depth: pt, bevelEnabled: true, bevelThickness: 1.5, bevelSize: 1.2, bevelSegments: 3
+          });
+
+          currentMesh = new THREE.Mesh(geom, primaryMaterial);
+          currentMesh.rotation.x = -Math.PI / 2;
+          currentMesh.position.set(-pl / 3, pt, 0);
+          scene.add(currentMesh);
+
+          const weight = Math.max(20, Math.round((pl * pw * pt / 1000) * 0.45 * 1.24));
+          updateMetricsDisplay("Gaya Tekan:", "Bisa Ditekan Pakai Siku/Telapak", weight, "PLA+ / PETG");
+          infoBadge.textContent = "Ujung bulat = Menekan tombol | Pangkal lebar = Ditekan dengan telapak/lengan";
+        }
+
+        [pPl, pPw, pPt].forEach(el => el.addEventListener('input', update));
+        dynamicControls.querySelectorAll('.btn-preset').forEach(btn => {
+          btn.addEventListener('click', () => {
+            pPl.value = btn.dataset.pl;
+            pPw.value = btn.dataset.pw;
+            pPt.value = btn.dataset.pt;
+            update();
+          });
+        });
+        update();
+      }
+
       // EXPORT BINARY STL
-      // -------------------------------------------------------------
       function exportBinarySTL(geometry, filename = 'ergo-tool.stl') {
         const tempGeom = geometry.clone();
         tempGeom.center();
@@ -729,12 +921,15 @@
         URL.revokeObjectURL(link.href);
       }
 
-      // Switcher Handler
+      // Router Switcher
       selectTool.addEventListener('change', (e) => {
         const val = e.target.value;
         if (val === 'lever') renderLeverControls();
         else if (val === 'grip') renderGripControls();
         else if (val === 'wedge') renderWedgeControls();
+        else if (val === 'key') renderKeyControls();
+        else if (val === 'page') renderPageControls();
+        else if (val === 'pusher') renderPusherControls();
       });
 
       btnExport.addEventListener('click', () => {
@@ -755,7 +950,7 @@
         renderer.render(scene, camera);
       }
 
-      // Inisialisasi awal
+      // Init pertama kali
       renderLeverControls();
       animate();
     })();
