@@ -1,35 +1,44 @@
-# ErgoStudio 3D - Parametric Assistive Tools Generator
+# ErgoStudio 3D - Universal Parametric Assistive & Automotive Tools Generator
 
-Platform berbasis web untuk merancang dan mengkustomisasi alat bantu kerja ergonomis serta adaptif fisik secara instan. Menghasilkan model 3D parametrik langsung di browser dan siap diekspor ke format biner `.STL` untuk dicetak menggunakan 3D printer tanpa memerlukan software CAD berbayar.
+Platform generator 3D interaktif berbasis web untuk merancang alat bantu kerja fisik, asistif disabilitas/lansia, serta aksesoris adaptif kendaraan. Menghasilkan model parametrik langsung di browser dan siap diekspor ke format biner `.STL` siap cetak menggunakan 3D printer tanpa perlu software CAD berbayar.
 
 Aplikasi ini berjalan 100% *client-side* (tanpa server backend atau database) dan siap di-deploy langsung menggunakan **GitHub Pages**.
 
 ---
 
-## 🛠️ Koleksi Alat Bantu yang Tersedia
+## 🛠️ Koleksi Lengkap Modul Alat (9 Modul)
 
-1. **Tuas Pembuka Tutup Botol / Keran (*Easy Twist Lever*)**
+### Kategori 1: Alat Bantu Harian & Tangan
+1. **Tuas Pembuka Botol & Keran (*Easy Twist Lever*)**
    * Mengurangi beban jepit tangan saat membuka botol air, toples bumbu, atau keran air yang keras menggunakan prinsip torsi/tuas pengungkit bergerigi.
-2. **Selongsong Gagang Alat (*Thick Grip Adapter*)**
-   * Selongsong berongga tebal berkontur lekukan jari untuk memperbesar pegangan obeng, kuas, sendok makan, atau pena bagi penderita radang sendi (*arthritis*) atau saraf kejepit (*carpal tunnel*).
-3. **Baji Miring Penyangga Tangan (*Wrist Wedge / Tenting*)**
-   * Penyangga sudut ergonomis untuk meja kerja, mouse, atau keyboard split guna menjaga pergelangan tangan tetap lurus dan rileks.
+2. **Selongsong Gagang Ergonomis (*Thick Grip Adapter*)**
+   * Memperbesar pegangan sendok makan, kuas lukis, pena, atau obeng bengkel bagi penderita radang sendi (*arthritis*) atau saraf kejepit (*carpal tunnel*).
+3. **Baji Penyangga Tangan (*Wrist Wedge / Tenting*)**
+   * Penyangga sudut ergonomis untuk meja kerja, mouse, atau keyboard split guna mencegah ketegangan sendi pergelangan.
 4. **Tuas Pemutar Anak Kunci Rumah (*Key Turner Lever*)**
-   * Gagang pipih bertuas pengungkit untuk memutar anak kunci pintu gerbang atau gembok yang macet/keras dengan dorongan telapak tangan.
+   * Gagang pipih bertuas pengungkit untuk memutar anak kunci gerbang atau gembok yang keras dengan dorongan telapak tangan.
 5. **Penahan Lembaran Buku (*Thumb Page Holder*)**
    * Cincin ibu jari bersayap ergonomis agar buku tebal dapat dibaca terbuka menggunakan satu tangan tanpa menyebabkan kram jempol.
 6. **Tuas Penekan Sakelar & Tombol (*Big Button Pusher*)**
-   * Tuas kontak tumpul untuk menekan sakelar lampu, tombol lift, atau kran dispenser menggunakan dorongan telapak tangan/lengan tanpa perlu menjepit jari.
+   * Tuas kontak tumpul untuk menekan sakelar lampu, tombol lift, atau kran dispenser galon menggunakan siku/telapak tanpa perlu menjepit jari.
+
+### Kategori 2: Aksesoris & Adaptif Kendaraan
+7. **Knop Pemutar Setir Mobil (*Steering Wheel Spinner Knob*)**
+   * Pegangan putar ergonomis di lingkar kemudi untuk memudahkan manuver putar balik atau parkir cukup dengan satu telapak tangan.
+8. **Klem Braket Setang Motor & Sepeda (*Handlebar Clamp Bracket*)**
+   * Klem pipa setang (standar 22 mm atau fatbar 28 mm) lengkap dengan tapak mounting dan lubang baut untuk dudukan HP/GPS atau sakelar lampu tambahan.
+9. **Ekstensi Tuas Sein & Wiper (*Stalk Lever Extension*)**
+   * Selongsong pemanjang tuas di balik setir mobil dengan sirip sentuh lebar agar lampu sein dapat dijangkau tanpa melepas genggaman setir.
 
 ---
 
 ## ✨ Fitur Utama
 
-* **Visualisasi 3D Real-Time**: Rendering interaktif langsung di browser menggunakan Three.js (bisa diputar, digeser, dan di-zoom).
-* **Generator Parametrik Dinamis**: Setiap perubahan slider dimensi langsung mengkalkulasi ulang geometri secara matematis.
-* **Kalkulator Biaya Cetak Lokal**: Estimasi berat filamen (gram) dan estimasi biaya jasa print 3D lokal (PLA/PETG/TPU).
-* **Ekspor Biner .STL Instan**: Menghasilkan berkas `.stl` siap cetak ke aplikasi slicer (Cura, PrusaSlicer, Bambu Studio) tanpa login atau langganan API pihak ketiga.
-* **Zero Dependency / Serverless**: Murni menggunakan HTML5, CSS3, dan Vanilla JavaScript (ES6+).
+* **Visualisasi 3D Interaktif**: Didukung oleh Three.js dengan pencahayaan realistis, grid referensi, dan panduan objek fisik (pipa/setir/tutup botol).
+* **Generator Parametrik Presisi**: Geometri 3D terhitung otomatis dari input slider ukuran fisik.
+* **Kalkulator Biaya Cetak Lokal**: Estimasi berat plastik (gram) dan estimasi biaya cetak jasa 3D printing lokal secara real-time.
+* **Ekspor Biner .STL Langsung**: Unduh berkas format `.stl` biner langsung dari browser tanpa konversi server pihak ketiga.
+* **100% Serverless & Ringan**: Cukup satu berkas `index.html` murni HTML, CSS, dan Vanilla JavaScript (ES6+).
 
 ---
 
@@ -37,13 +46,13 @@ Aplikasi ini berjalan 100% *client-side* (tanpa server backend atau database) da
 
 ### 1. Menjalankan di Komputer Lokal
 1. Unduh berkas `index.html`.
-2. Klik dua kali berkas `index.html` untuk langsung membukanya di browser apa saja (Chrome, Edge, Firefox, Safari).
+2. Klik dua kali berkas `index.html` untuk membukanya langsung di browser (Chrome, Edge, Firefox, Safari).
 
 ### 2. Deploy Gratis ke GitHub Pages
 1. Buat repositori baru di GitHub (misal: `ergostudio-3d`) dan atur visibilitas ke **Public**.
-2. Unggah berkas `index.html` ke *root directory* repositori tersebut.
-3. Masuk ke menu **Settings** > **Pages** di halaman repositori.
-4. Pada opsi **Branch**, pilih `main` (atau `master`) dan folder `/ (root)`, lalu klik **Save**.
-5. Akses aplikasi melalui tautan yang disediakan GitHub:
+2. Unggah berkas `index.html` ke repositori.
+3. Buka menu **Settings** > **Pages** di repositori tersebut.
+4. Pada bagian **Branch**, pilih `main` (atau `master`) dan folder `/ (root)`, lalu klik **Save**.
+5. Akses aplikasi melalui URL yang dihasilkan GitHub:
    ```text
-   https://fatchurohman.github.io/ergostudio-3d/
+   https://<username-kamu>.github.io/ergostudio-3d/
