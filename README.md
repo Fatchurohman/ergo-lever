@@ -46,4 +46,4 @@ Aplikasi ini berjalan 100% *client-side* (tanpa server backend atau database) da
 4. Pada opsi **Branch**, pilih `main` (atau `master`) dan folder `/ (root)`, lalu klik **Save**.
 5. Akses aplikasi melalui tautan yang disediakan GitHub:
    ```text
-   https://<username-kamu>.github.io/ergostudio-3d/
+   https://fatchurohman.github.io/ergostudio-3d/
