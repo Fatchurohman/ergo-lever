@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Easy Twist Lever - Parametric 3D Generator</title>
+  <title>ErgoStudio - Multi-Tool Parametric 3D Generator</title>
   <style>
     *, *::before, *::after {
       box-sizing: border-box;
@@ -29,14 +29,14 @@
       display: block;
     }
     #sidebar {
-      width: 380px;
+      width: 400px;
       background-color: #1e293b;
       border-left: 1px solid #334155;
       display: flex;
       flex-direction: column;
       overflow-y: auto;
       padding: 24px;
-      gap: 20px;
+      gap: 18px;
     }
     .header h1 {
       font-size: 1.25rem;
@@ -53,7 +53,7 @@
       color: #94a3b8;
       text-transform: lowercase;
       letter-spacing: 0.5px;
-      margin-bottom: 12px;
+      margin-bottom: 8px;
       background: rgba(15, 23, 42, 0.6);
       padding: 4px 10px;
       border-radius: 9999px;
@@ -83,19 +83,29 @@
       animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
     }
     @keyframes ping {
-      0% {
-        transform: scale(1);
-        opacity: 0.8;
-      }
-      75%, 100% {
-        transform: scale(2.4);
-        opacity: 0;
-      }
+      0% { transform: scale(1); opacity: 0.8; }
+      75%, 100% { transform: scale(2.4); opacity: 0; }
     }
-    .header p {
+    .tool-selector {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .tool-selector label {
       font-size: 0.85rem;
       color: #94a3b8;
-      line-height: 1.4;
+      font-weight: 600;
+    }
+    .tool-selector select {
+      background: #0f172a;
+      border: 1px solid #475569;
+      color: #38bdf8;
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      outline: none;
+      cursor: pointer;
     }
     .preset-group {
       display: flex;
@@ -119,7 +129,7 @@
     .control-group {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 6px;
     }
     .control-label {
       display: flex;
@@ -144,7 +154,7 @@
       padding: 16px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
     }
     .metric-row {
       display: flex;
@@ -184,7 +194,7 @@
       position: absolute;
       top: 16px;
       left: 16px;
-      background: rgba(15, 23, 42, 0.75);
+      background: rgba(15, 23, 42, 0.8);
       border: 1px solid rgba(255, 255, 255, 0.1);
       padding: 8px 12px;
       border-radius: 6px;
@@ -193,29 +203,22 @@
       pointer-events: none;
     }
     @media (max-width: 768px) {
-      body {
-        flex-direction: column;
-      }
-      #sidebar {
-        width: 100%;
-        height: 50vh;
-      }
-      #viewport-container {
-        height: 50vh;
-      }
+      body { flex-direction: column; }
+      #sidebar { width: 100%; height: 55vh; }
+      #viewport-container { height: 45vh; }
     }
   </style>
 </head>
 <body>
 
   <div id="viewport-container">
-    <div class="instruction-badge">Klik & seret untuk putar 3D | Scroll untuk zoom</div>
+    <div class="instruction-badge" id="info-badge">Klik & seret untuk putar 3D | Scroll untuk zoom</div>
     <canvas id="canvas3d"></canvas>
   </div>
 
   <div id="sidebar">
     <div class="header">
-      <h1>Easy Twist Lever</h1>
+      <h1>ErgoStudio 3D</h1>
       <div class="dev-badge">
         <span class="live-dot-wrapper">
           <span class="live-dot-ping"></span>
@@ -223,55 +226,36 @@
         </span>
         <span>developer : fatur62</span>
       </div>
-      <p>Generator alat bantu pembuka tutup botol & keran adaptif. Siap diekspor langsung ke format .STL untuk 3D print.</p>
     </div>
 
-    <div class="preset-group">
-      <button class="btn-preset" data-diam="30" data-len="130" data-thk="12">Botol Air</button>
-      <button class="btn-preset" data-diam="42" data-len="150" data-thk="14">Keran Air</button>
-      <button class="btn-preset" data-diam="65" data-len="170" data-thk="15">Toples Selai</button>
+    <div class="tool-selector">
+      <label for="select-tool">Pilih Jenis Alat Bantu:</label>
+      <select id="select-tool">
+        <option value="lever">1. Tuas Pembuka Botol & Keran (Easy Lever)</option>
+        <option value="grip">2. Selongsong Gagang Alat (Thick Grip)</option>
+        <option value="wedge">3. Baji Penyangga Tangan (Wrist Wedge)</option>
+      </select>
     </div>
 
-    <div class="control-group">
-      <div class="control-label">
-        <label for="input-diameter">Diameter Tutup</label>
-        <span id="label-diameter">32 mm</span>
-      </div>
-      <input type="range" id="input-diameter" min="20" max="80" step="1" value="32">
-    </div>
-
-    <div class="control-group">
-      <div class="control-label">
-        <label for="input-length">Panjang Tuas</label>
-        <span id="label-length">130 mm</span>
-      </div>
-      <input type="range" id="input-length" min="80" max="200" step="5" value="130">
-    </div>
-
-    <div class="control-group">
-      <div class="control-label">
-        <label for="input-thickness">Ketebalan Alat</label>
-        <span id="label-thickness">12 mm</span>
-      </div>
-      <input type="range" id="input-thickness" min="8" max="20" step="1" value="12">
-    </div>
+    <!-- Parameter Dinamis Container -->
+    <div id="dynamic-controls" style="display: flex; flex-direction: column; gap: 14px;"></div>
 
     <div class="metrics-panel">
       <div class="metric-row">
-        <span class="label">Beban Putar Lebih Ringan:</span>
-        <span class="val highlight" id="metric-assist">75%</span>
+        <span class="label" id="metric-label-benefit">Efek Ergonomis:</span>
+        <span class="val highlight" id="metric-benefit">-</span>
       </div>
       <div class="metric-row">
         <span class="label">Estimasi Berat Filamen:</span>
-        <span class="val" id="metric-weight">38 g</span>
+        <span class="val" id="metric-weight">-</span>
       </div>
       <div class="metric-row">
-        <span class="label">Bahan yang Disarankan:</span>
-        <span class="val">PLA+ / PETG</span>
+        <span class="label">Rekomendasi Bahan:</span>
+        <span class="val" id="metric-material">PLA+ / PETG</span>
       </div>
       <div class="metric-row">
-        <span class="label">Estimasi Jasa Print Lokal:</span>
-        <span class="val highlight" id="metric-cost">Rp 19.000</span>
+        <span class="label">Estimasi Biaya Cetak:</span>
+        <span class="val highlight" id="metric-cost">-</span>
       </div>
     </div>
 
@@ -294,21 +278,20 @@
 
       const canvas = document.getElementById('canvas3d');
       const container = document.getElementById('viewport-container');
-      const inputDiameter = document.getElementById('input-diameter');
-      const inputLength = document.getElementById('input-length');
-      const inputThickness = document.getElementById('input-thickness');
-      const labelDiameter = document.getElementById('label-diameter');
-      const labelLength = document.getElementById('label-length');
-      const labelThickness = document.getElementById('label-thickness');
-      const metricAssist = document.getElementById('metric-assist');
+      const selectTool = document.getElementById('select-tool');
+      const dynamicControls = document.getElementById('dynamic-controls');
+      const infoBadge = document.getElementById('info-badge');
+      const metricLabelBenefit = document.getElementById('metric-label-benefit');
+      const metricBenefit = document.getElementById('metric-benefit');
       const metricWeight = document.getElementById('metric-weight');
+      const metricMaterial = document.getElementById('metric-material');
       const metricCost = document.getElementById('metric-cost');
       const btnExport = document.getElementById('btn-export');
-      const presetButtons = document.querySelectorAll('.btn-preset');
 
+      // Scene 3D Setup
       const scene = new THREE.Scene();
       const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
-      camera.position.set(0, 160, 240);
+      camera.position.set(60, 160, 220);
 
       const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
       renderer.setSize(container.clientWidth, container.clientHeight);
@@ -316,133 +299,385 @@
       renderer.shadowMap.enabled = true;
 
       const controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.target.set(30, 0, 0);
       controls.enableDamping = true;
       controls.dampingFactor = 0.05;
-      controls.maxPolarAngle = Math.PI / 2 + 0.1;
 
       const ambientLight = new THREE.AmbientLight(0xffffff, 0.65);
       scene.add(ambientLight);
 
-      const dirLight = new THREE.DirectionalLight(0xffffff, 0.85);
-      dirLight.position.set(100, 200, 100);
+      const dirLight = new THREE.DirectionalLight(0xffffff, 0.9);
+      dirLight.position.set(80, 200, 100);
       dirLight.castShadow = true;
       scene.add(dirLight);
 
-      const fillLight = new THREE.DirectionalLight(0x38bdf8, 0.35);
+      const fillLight = new THREE.DirectionalLight(0x38bdf8, 0.4);
       fillLight.position.set(-100, -100, -100);
       scene.add(fillLight);
 
-      const grid = new THREE.GridHelper(300, 30, 0x334155, 0x1e293b);
-      grid.position.y = -0.5;
+      const grid = new THREE.GridHelper(350, 35, 0x334155, 0x1e293b);
+      grid.position.set(30, -0.5, 0);
       scene.add(grid);
 
-      const material = new THREE.MeshStandardMaterial({
+      // Material Objek
+      const primaryMaterial = new THREE.MeshStandardMaterial({
         color: 0x0ea5e9,
         roughness: 0.35,
-        metalness: 0.1,
-        wireframe: false
+        metalness: 0.1
+      });
+
+      const helperMaterial = new THREE.MeshStandardMaterial({
+        color: 0x64748b,
+        roughness: 0.5,
+        transparent: true,
+        opacity: 0.45
       });
 
       let currentMesh = null;
+      let referenceMesh = null;
 
-      function createParametricLeverGeometry(capDiameter, leverLength, thickness) {
-        const radius = capDiameter / 2;
-        const outerHeadRadius = radius + 10;
-        const handleEndWidth = 24;
-        const teethCount = Math.max(16, Math.floor(capDiameter * 0.7));
-        const toothDepth = 1.4;
-
-        const shape = new THREE.Shape();
-        const tangentAngle = Math.asin(Math.min(0.95, (outerHeadRadius - handleEndWidth / 2) / leverLength));
-        const startArcAngle = Math.PI / 2 + tangentAngle;
-        const endArcAngle = 3 * Math.PI / 2 - tangentAngle;
-
-        shape.absarc(0, 0, outerHeadRadius, startArcAngle, endArcAngle, false);
-        shape.lineTo(leverLength, -handleEndWidth / 2);
-        shape.absarc(leverLength, 0, handleEndWidth / 2, -Math.PI / 2, Math.PI / 2, false);
-        shape.lineTo(
-          outerHeadRadius * Math.cos(startArcAngle),
-          outerHeadRadius * Math.sin(startArcAngle)
-        );
-
-        const holePath = new THREE.Path();
-        const numSamples = teethCount * 2;
-        for (let i = 0; i <= numSamples; i++) {
-          const theta = (i / numSamples) * Math.PI * 2;
-          const isTooth = i % 2 === 1;
-          const currentR = isTooth ? radius - toothDepth : radius;
-          const hx = Math.cos(theta) * currentR;
-          const hy = Math.sin(theta) * currentR;
-          if (i === 0) {
-            holePath.moveTo(hx, hy);
-          } else {
-            holePath.lineTo(hx, hy);
-          }
-        }
-        shape.holes.push(holePath);
-
-        const extrudeSettings = {
-          steps: 1,
-          depth: thickness,
-          bevelEnabled: true,
-          bevelThickness: 1.5,
-          bevelSize: 1.2,
-          bevelSegments: 3
-        };
-
-        const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-        geometry.center();
-        return geometry;
-      }
-
-      function updateModel() {
-        const diameter = parseFloat(inputDiameter.value) || 32;
-        const length = parseFloat(inputLength.value) || 130;
-        const thickness = parseFloat(inputThickness.value) || 12;
-
-        labelDiameter.textContent = `${diameter} mm`;
-        labelLength.textContent = `${length} mm`;
-        labelThickness.textContent = `${thickness} mm`;
-
+      function clearMeshes() {
         if (currentMesh) {
           scene.remove(currentMesh);
           currentMesh.geometry.dispose();
+          currentMesh = null;
         }
-
-        const geometry = createParametricLeverGeometry(diameter, length, thickness);
-        currentMesh = new THREE.Mesh(geometry, material);
-        currentMesh.rotation.x = -Math.PI / 2;
-        currentMesh.position.y = thickness / 2;
-        currentMesh.castShadow = true;
-        scene.add(currentMesh);
-
-        const assistRatio = Math.min(88, Math.round((1 - (diameter / (length * 1.5))) * 100));
-        metricAssist.textContent = `${assistRatio}%`;
-
-        const approxVolumeCm3 = (((Math.PI * Math.pow(diameter / 20 + 1, 2) - Math.PI * Math.pow(diameter / 20, 2)) + (length / 10 * 2.2)) * (thickness / 10)) * 0.45;
-        const weightGrams = Math.max(18, Math.round(approxVolumeCm3 * 1.24));
-        metricWeight.textContent = `${weightGrams} g`;
-
-        const costEstimate = Math.max(15000, Math.round(weightGrams * 500 / 1000) * 1000);
-        metricCost.textContent = `Rp ${costEstimate.toLocaleString('id-ID')}`;
+        if (referenceMesh) {
+          scene.remove(referenceMesh);
+          referenceMesh.geometry.dispose();
+          referenceMesh = null;
+        }
       }
 
-      function exportBinarySTL(geometry, filename = 'easy-twist-lever.stl') {
+      // -------------------------------------------------------------
+      // 1. TOOL: EASY TWIST LEVER
+      // -------------------------------------------------------------
+      function renderLeverControls() {
+        dynamicControls.innerHTML = `
+          <div class="preset-group">
+            <button class="btn-preset" data-d="30" data-l="110" data-t="10">Botol Air</button>
+            <button class="btn-preset" data-d="45" data-l="140" data-t="12">Keran Air</button>
+            <button class="btn-preset" data-d="70" data-l="175" data-t="15">Toples Selai</button>
+          </div>
+          <div class="control-group">
+            <div class="control-label"><label>Diameter Tutup</label><span id="val-d">30 mm</span></div>
+            <input type="range" id="param-d" min="20" max="85" step="1" value="30">
+          </div>
+          <div class="control-group">
+            <div class="control-label"><label>Panjang Tuas</label><span id="val-l">110 mm</span></div>
+            <input type="range" id="param-l" min="80" max="220" step="5" value="110">
+          </div>
+          <div class="control-group">
+            <div class="control-label"><label>Ketebalan Alat</label><span id="val-t">10 mm</span></div>
+            <input type="range" id="param-t" min="8" max="20" step="1" value="10">
+          </div>
+        `;
+
+        const pD = document.getElementById('param-d');
+        const pL = document.getElementById('param-l');
+        const pT = document.getElementById('param-t');
+        const vD = document.getElementById('val-d');
+        const vL = document.getElementById('val-l');
+        const vT = document.getElementById('val-t');
+
+        function update() {
+          const d = parseFloat(pD.value);
+          const l = parseFloat(pL.value);
+          const t = parseFloat(pT.value);
+          vD.textContent = `${d} mm`;
+          vL.textContent = `${l} mm`;
+          vT.textContent = `${t} mm`;
+
+          clearMeshes();
+
+          const radius = d / 2;
+          const outerHeadRadius = radius + 11;
+          const handleEndWidth = 24;
+          const teethCount = Math.max(16, Math.floor(d * 0.75));
+          const toothDepth = 1.4;
+
+          const shape = new THREE.Shape();
+          const sinRatio = Math.min(0.95, (outerHeadRadius - handleEndWidth / 2) / l);
+          const tangentAngle = Math.asin(sinRatio);
+          const startArc = Math.PI / 2 + tangentAngle;
+          const endArc = 3 * Math.PI / 2 - tangentAngle;
+
+          shape.absarc(0, 0, outerHeadRadius, startArc, endArc, false);
+          shape.lineTo(l, -handleEndWidth / 2);
+          shape.absarc(l, 0, handleEndWidth / 2, -Math.PI / 2, Math.PI / 2, false);
+          shape.lineTo(outerHeadRadius * Math.cos(startArc), outerHeadRadius * Math.sin(startArc));
+
+          const hole = new THREE.Path();
+          const samples = teethCount * 2;
+          for (let i = 0; i <= samples; i++) {
+            const theta = (i / samples) * Math.PI * 2;
+            const r = (i % 2 === 1) ? radius - toothDepth : radius;
+            const x = Math.cos(theta) * r;
+            const y = Math.sin(theta) * r;
+            if (i === 0) hole.moveTo(x, y);
+            else hole.lineTo(x, y);
+          }
+          shape.holes.push(hole);
+
+          const geom = new THREE.ExtrudeGeometry(shape, {
+            steps: 1, depth: t, bevelEnabled: true, bevelThickness: 1.5, bevelSize: 1.2, bevelSegments: 3
+          });
+
+          currentMesh = new THREE.Mesh(geom, primaryMaterial);
+          currentMesh.rotation.x = -Math.PI / 2;
+          currentMesh.position.set(0, t, 0);
+          currentMesh.castShadow = true;
+          scene.add(currentMesh);
+
+          const capGeom = new THREE.CylinderGeometry(radius, radius, t + 12, 32);
+          referenceMesh = new THREE.Mesh(capGeom, helperMaterial);
+          referenceMesh.position.set(0, (t + 12) / 2 - 2, 0);
+          scene.add(referenceMesh);
+
+          // Update Info
+          metricLabelBenefit.textContent = "Beban Putar:";
+          metricBenefit.textContent = `${Math.min(88, Math.round((1 - (d / (l * 1.6))) * 100))}% Lebih Ringan`;
+          const weight = Math.max(16, Math.round((((Math.PI * Math.pow(d / 20 + 1.1, 2) - Math.PI * Math.pow(d / 20, 2)) + (l / 10 * 2.2)) * (t / 10)) * 0.45 * 1.24));
+          metricWeight.textContent = `${weight} g`;
+          metricMaterial.textContent = "PLA+ / PETG";
+          metricCost.textContent = `Rp ${Math.max(15000, Math.round(weight * 500 / 1000) * 1000).toLocaleString('id-ID')}`;
+          infoBadge.textContent = "Silinder abu-abu = Tutup yang dicengkeram | Tuas biru = Pengungkit";
+        }
+
+        [pD, pL, pT].forEach(el => el.addEventListener('input', update));
+        dynamicControls.querySelectorAll('.btn-preset').forEach(btn => {
+          btn.addEventListener('click', () => {
+            pD.value = btn.dataset.d;
+            pL.value = btn.dataset.l;
+            pT.value = btn.dataset.t;
+            update();
+          });
+        });
+        update();
+      }
+
+      // -------------------------------------------------------------
+      // 2. TOOL: THICK GRIP ADAPTER (SELONGSONG GAGANG ERGONOMI)
+      // -------------------------------------------------------------
+      function renderGripControls() {
+        dynamicControls.innerHTML = `
+          <div class="preset-group">
+            <button class="btn-preset" data-inner="8" data-outer="32" data-h="100">Pena / Kuas</button>
+            <button class="btn-preset" data-inner="11" data-outer="38" data-h="110">Sendok Makan</button>
+            <button class="btn-preset" data-inner="16" data-outer="42" data-h="120">Obeng / Tangkai</button>
+          </div>
+          <div class="control-group">
+            <div class="control-label"><label>Diameter Alat Asli (Lubang)</label><span id="val-inner">11 mm</span></div>
+            <input type="range" id="param-inner" min="5" max="25" step="1" value="11">
+          </div>
+          <div class="control-group">
+            <div class="control-label"><label>Diameter Genggaman Luar</label><span id="val-outer">38 mm</span></div>
+            <input type="range" id="param-outer" min="26" max="55" step="1" value="38">
+          </div>
+          <div class="control-group">
+            <div class="control-label"><label>Panjang Gagang</label><span id="val-h">110 mm</span></div>
+            <input type="range" id="param-h" min="70" max="150" step="5" value="110">
+          </div>
+        `;
+
+        const pInner = document.getElementById('param-inner');
+        const pOuter = document.getElementById('param-outer');
+        const pH = document.getElementById('param-h');
+        const vInner = document.getElementById('val-inner');
+        const vOuter = document.getElementById('val-outer');
+        const vH = document.getElementById('val-h');
+
+        function update() {
+          const innerD = parseFloat(pInner.value);
+          const outerD = Math.max(innerD + 10, parseFloat(pOuter.value));
+          const h = parseFloat(pH.value);
+          pOuter.value = outerD;
+
+          vInner.textContent = `${innerD} mm`;
+          vOuter.textContent = `${outerD} mm`;
+          vH.textContent = `${h} mm`;
+
+          clearMeshes();
+
+          // Membentuk profil bergelombang ergonomis dengan LatheGeometry
+          const points = [];
+          const innerR = innerD / 2;
+          const baseOuterR = outerD / 2;
+          const segments = 40;
+
+          for (let i = 0; i <= segments; i++) {
+            const t = i / segments;
+            const y = t * h;
+            // Gelombang lekukan jari (finger grooves)
+            const groove = Math.sin(t * Math.PI * 4) * 2.2;
+            const flare = Math.sin(t * Math.PI) * 2.5;
+            const r = baseOuterR + groove + flare;
+            points.push(new THREE.Vector2(r, y));
+          }
+
+          // Geometry luar
+          const outerGeom = new THREE.CylinderGeometry(baseOuterR, baseOuterR, h, 32, 1, true);
+          // Selongsong berongga dengan Extrude Shape
+          const shape = new THREE.Shape();
+          shape.absarc(0, 0, baseOuterR, 0, Math.PI * 2, false);
+          const hole = new THREE.Path();
+          hole.absarc(0, 0, innerR, 0, Math.PI * 2, true);
+          shape.holes.push(hole);
+
+          const geom = new THREE.ExtrudeGeometry(shape, {
+            steps: 20,
+            depth: h,
+            bevelEnabled: true,
+            bevelThickness: 3,
+            bevelSize: 2,
+            bevelSegments: 4
+          });
+
+          currentMesh = new THREE.Mesh(geom, primaryMaterial);
+          currentMesh.rotation.x = -Math.PI / 2;
+          currentMesh.position.set(30, 0, 0);
+          currentMesh.castShadow = true;
+          scene.add(currentMesh);
+
+          // Batang alat referensi di tengah
+          const coreGeom = new THREE.CylinderGeometry(innerR, innerR, h + 30, 24);
+          referenceMesh = new THREE.Mesh(coreGeom, helperMaterial);
+          referenceMesh.position.set(30, (h + 30) / 2 - 15, 0);
+          scene.add(referenceMesh);
+
+          // Metrics
+          metricLabelBenefit.textContent = "Beban Jepitan Jari:";
+          metricBenefit.textContent = "Turun ~60% (Lebih Nyaman)";
+          const volCm3 = ((Math.PI * Math.pow(outerD / 20, 2) - Math.PI * Math.pow(innerD / 20, 2)) * (h / 10)) * 0.4;
+          const weight = Math.max(22, Math.round(volCm3 * 1.22));
+          metricWeight.textContent = `${weight} g`;
+          metricMaterial.textContent = "TPU (Karet) / PLA";
+          metricCost.textContent = `Rp ${Math.max(18000, Math.round(weight * 600 / 1000) * 1000).toLocaleString('id-ID')}`;
+          infoBadge.textContent = "Batang abu-abu = Obeng/Pena asli | Selongsong biru = Adaptor empuk";
+        }
+
+        [pInner, pOuter, pH].forEach(el => el.addEventListener('input', update));
+        dynamicControls.querySelectorAll('.btn-preset').forEach(btn => {
+          btn.addEventListener('click', () => {
+            pInner.value = btn.dataset.inner;
+            pOuter.value = btn.dataset.outer;
+            pH.value = btn.dataset.h;
+            update();
+          });
+        });
+        update();
+      }
+
+      // -------------------------------------------------------------
+      // 3. TOOL: WRIST WEDGE / TENTING (BAJI PERGELANGAN TANGAN)
+      // -------------------------------------------------------------
+      function renderWedgeControls() {
+        dynamicControls.innerHTML = `
+          <div class="preset-group">
+            <button class="btn-preset" data-ang="8" data-w="90" data-d="80">Mouse Standar</button>
+            <button class="btn-preset" data-ang="12" data-w="120" data-d="90">Keyboard Wedge</button>
+            <button class="btn-preset" data-ang="18" data-w="110" data-d="100">Koreksi Artritis</button>
+          </div>
+          <div class="control-group">
+            <div class="control-label"><label>Sudut Kemiringan (Tenting)</label><span id="val-ang">12°</span></div>
+            <input type="range" id="param-ang" min="5" max="25" step="1" value="12">
+          </div>
+          <div class="control-group">
+            <div class="control-label"><label>Lebar Bantalan</label><span id="val-w">110 mm</span></div>
+            <input type="range" id="param-w" min="70" max="160" step="5" value="110">
+          </div>
+          <div class="control-group">
+            <div class="control-label"><label>Kedalaman (Panjang Telapak)</label><span id="val-dep">90 mm</span></div>
+            <input type="range" id="param-dep" min="60" max="130" step="5" value="90">
+          </div>
+        `;
+
+        const pAng = document.getElementById('param-ang');
+        const pW = document.getElementById('param-w');
+        const pDep = document.getElementById('param-dep');
+        const vAng = document.getElementById('val-ang');
+        const vW = document.getElementById('val-w');
+        const vDep = document.getElementById('val-dep');
+
+        function update() {
+          const ang = parseFloat(pAng.value);
+          const w = parseFloat(pW.value);
+          const dep = parseFloat(pDep.value);
+
+          vAng.textContent = `${ang} deg`;
+          vW.textContent = `${w} mm`;
+          vDep.textContent = `${dep} mm`;
+
+          clearMeshes();
+
+          // Penampang segitiga baji (wedge profile)
+          const rad = (ang * Math.PI) / 180;
+          const minH = 5; // tinggi sisi rendah (mm)
+          const maxH = minH + Math.tan(rad) * dep;
+
+          const shape = new THREE.Shape();
+          shape.moveTo(0, 0);
+          shape.lineTo(dep, 0);
+          shape.lineTo(dep, maxH);
+          shape.lineTo(0, minH);
+          shape.closePath();
+
+          const geom = new THREE.ExtrudeGeometry(shape, {
+            steps: 1,
+            depth: w,
+            bevelEnabled: true,
+            bevelThickness: 2,
+            bevelSize: 2,
+            bevelSegments: 3
+          });
+
+          currentMesh = new THREE.Mesh(geom, primaryMaterial);
+          currentMesh.rotation.y = Math.PI / 2;
+          currentMesh.position.set(-w / 2 + 30, 0, dep / 2);
+          currentMesh.castShadow = true;
+          scene.add(currentMesh);
+
+          // Metrics
+          metricLabelBenefit.textContent = "Tekanan Saraf Kejepit:";
+          metricBenefit.textContent = "Bebas Tekanan Sendi";
+          const volCm3 = ((minH + maxH) / 2 * dep * w / 1000) * 0.25;
+          const weight = Math.max(30, Math.round(volCm3 * 1.24));
+          metricWeight.textContent = `${weight} g`;
+          metricMaterial.textContent = "PLA+ / TPU";
+          metricCost.textContent = `Rp ${Math.max(16000, Math.round(weight * 500 / 1000) * 1000).toLocaleString('id-ID')}`;
+          infoBadge.textContent = "Baji miring penyangga pergelangan tangan / pengatur sudut alat";
+        }
+
+        [pAng, pW, pDep].forEach(el => el.addEventListener('input', update));
+        dynamicControls.querySelectorAll('.btn-preset').forEach(btn => {
+          btn.addEventListener('click', () => {
+            pAng.value = btn.dataset.ang;
+            pW.value = btn.dataset.w;
+            pDep.value = btn.dataset.dep;
+            update();
+          });
+        });
+        update();
+      }
+
+      // -------------------------------------------------------------
+      // EXPORT BINARY STL
+      // -------------------------------------------------------------
+      function exportBinarySTL(geometry, filename = 'ergo-tool.stl') {
         const tempGeom = geometry.clone();
         tempGeom.center();
-        const positionAttr = tempGeom.attributes.position;
-        const indexAttr = tempGeom.index;
+        const pos = tempGeom.attributes.position;
+        const idx = tempGeom.index;
 
-        const triangleCount = indexAttr ? indexAttr.count / 3 : positionAttr.count / 3;
-        const bufferSize = 84 + (triangleCount * 50);
-        const buffer = new ArrayBuffer(bufferSize);
-        const dataView = new DataView(buffer);
+        const count = idx ? idx.count / 3 : pos.count / 3;
+        const buffer = new ArrayBuffer(84 + (count * 50));
+        const view = new DataView(buffer);
 
-        const header = "Binary STL - Generated by Easy Twist Lever Web Generator";
+        const header = "Binary STL - ErgoStudio Multi-Tool Parametric Generator";
         for (let i = 0; i < 80; i++) {
-          dataView.setUint8(i, i < header.length ? header.charCodeAt(i) : 0);
+          view.setUint8(i, i < header.length ? header.charCodeAt(i) : 0);
         }
-        dataView.setUint32(80, triangleCount, true);
+        view.setUint32(80, count, true);
 
         let offset = 84;
         const vA = new THREE.Vector3();
@@ -451,42 +686,39 @@
         const cb = new THREE.Vector3();
         const ab = new THREE.Vector3();
 
-        for (let i = 0; i < triangleCount; i++) {
-          let idx0 = i * 3;
-          let idx1 = i * 3 + 1;
-          let idx2 = i * 3 + 2;
-
-          if (indexAttr) {
-            idx0 = indexAttr.getX(idx0);
-            idx1 = indexAttr.getX(idx1);
-            idx2 = indexAttr.getX(idx2);
+        for (let i = 0; i < count; i++) {
+          let i0 = i * 3, i1 = i * 3 + 1, i2 = i * 3 + 2;
+          if (idx) {
+            i0 = idx.getX(i0);
+            i1 = idx.getX(i1);
+            i2 = idx.getX(i2);
           }
 
-          vA.fromBufferAttribute(positionAttr, idx0);
-          vB.fromBufferAttribute(positionAttr, idx1);
-          vC.fromBufferAttribute(positionAttr, idx2);
+          vA.fromBufferAttribute(pos, i0);
+          vB.fromBufferAttribute(pos, i1);
+          vC.fromBufferAttribute(pos, i2);
 
           cb.subVectors(vC, vB);
           ab.subVectors(vA, vB);
           cb.cross(ab).normalize();
 
-          dataView.setFloat32(offset, cb.x, true); offset += 4;
-          dataView.setFloat32(offset, cb.y, true); offset += 4;
-          dataView.setFloat32(offset, cb.z, true); offset += 4;
+          view.setFloat32(offset, cb.x, true); offset += 4;
+          view.setFloat32(offset, cb.y, true); offset += 4;
+          view.setFloat32(offset, cb.z, true); offset += 4;
 
-          dataView.setFloat32(offset, vA.x, true); offset += 4;
-          dataView.setFloat32(offset, vA.y, true); offset += 4;
-          dataView.setFloat32(offset, vA.z, true); offset += 4;
+          view.setFloat32(offset, vA.x, true); offset += 4;
+          view.setFloat32(offset, vA.y, true); offset += 4;
+          view.setFloat32(offset, vA.z, true); offset += 4;
 
-          dataView.setFloat32(offset, vB.x, true); offset += 4;
-          dataView.setFloat32(offset, vB.y, true); offset += 4;
-          dataView.setFloat32(offset, vB.z, true); offset += 4;
+          view.setFloat32(offset, vB.x, true); offset += 4;
+          view.setFloat32(offset, vB.y, true); offset += 4;
+          view.setFloat32(offset, vB.z, true); offset += 4;
 
-          dataView.setFloat32(offset, vC.x, true); offset += 4;
-          dataView.setFloat32(offset, vC.y, true); offset += 4;
-          dataView.setFloat32(offset, vC.z, true); offset += 4;
+          view.setFloat32(offset, vC.x, true); offset += 4;
+          view.setFloat32(offset, vC.y, true); offset += 4;
+          view.setFloat32(offset, vC.z, true); offset += 4;
 
-          dataView.setUint16(offset, 0, true); offset += 2;
+          view.setUint16(offset, 0, true); offset += 2;
         }
 
         const blob = new Blob([buffer], { type: 'application/octet-stream' });
@@ -497,22 +729,18 @@
         URL.revokeObjectURL(link.href);
       }
 
-      [inputDiameter, inputLength, inputThickness].forEach(input => {
-        input.addEventListener('input', updateModel);
-      });
-
-      presetButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-          inputDiameter.value = btn.dataset.diam;
-          inputLength.value = btn.dataset.len;
-          inputThickness.value = btn.dataset.thk;
-          updateModel();
-        });
+      // Switcher Handler
+      selectTool.addEventListener('change', (e) => {
+        const val = e.target.value;
+        if (val === 'lever') renderLeverControls();
+        else if (val === 'grip') renderGripControls();
+        else if (val === 'wedge') renderWedgeControls();
       });
 
       btnExport.addEventListener('click', () => {
         if (!currentMesh) return;
-        exportBinarySTL(currentMesh.geometry, `easy-twist-${inputDiameter.value}mm.stl`);
+        const toolName = selectTool.value;
+        exportBinarySTL(currentMesh.geometry, `ergo-${toolName}-${Date.now()}.stl`);
       });
 
       window.addEventListener('resize', () => {
@@ -527,7 +755,8 @@
         renderer.render(scene, camera);
       }
 
-      updateModel();
+      // Inisialisasi awal
+      renderLeverControls();
       animate();
     })();
   </script>
